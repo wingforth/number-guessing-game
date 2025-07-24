@@ -1,6 +1,6 @@
 # from random import randint
 import random
-
+import time
 
 DIFFICULTY = [("Easy", 10), ("Medium", 5), ("Hard", 3)]
 
@@ -33,10 +33,15 @@ def set_difficulty_level() -> int:
 
 def guess(secret: int, chances: int) -> None:
     print("\nLet's start the game!\n")
+    start = time.perf_counter()
     for i in range(chances):
         answer = _input_int("Enter your guess: ")
         if answer == secret:
-            print(f"Congratulations! You guessed the correct number in {i + 1} attempts.")
+            end = time.perf_counter()
+            print(
+                f"Congratulations! You guessed the correct number in {i + 1} attempts. "
+                f"It took {end - start:.3f} seconds."
+            )
             break
         if answer < secret:
             print(f"Incorrect! The number is greater than {answer}")
