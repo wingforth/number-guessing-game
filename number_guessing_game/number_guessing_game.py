@@ -33,7 +33,7 @@ def set_difficulty_level() -> int:
     return chances
 
 
-def guess(secret: int, chances: int):
+def guess(secret: int, chances: int) -> None:
     for i in range(chances):
         answer = _input_int("Enter your guess: ")
         if answer == secret:
