@@ -5,9 +5,9 @@ import random
 DIFFICULTY = [("Easy", 10), ("Medium", 5), ("Hard", 3)]
 
 
-def _input_int(message: str, bound: tuple[int, int] | None = None) -> int:
+def _input_int(message: str = "", bound: tuple[int, int] | None = None) -> int:
     while True:
-        s = input(message)
+        s = input(message).strip()
         try:
             integer = int(s)
         except ValueError:
