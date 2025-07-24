@@ -39,7 +39,10 @@ def guess(secret: int, chances: int) -> None:
         if answer == secret:
             print(f"Congratulations! You guessed the correct number in {i + 1} attempts.")
             break
-        print(f"Incorrect! The number is {'less' if secret < answer else 'greater'} than {answer}")
+        if answer < secret:
+            print(f"Incorrect! The number is greater than {answer}")
+        else:
+            print(f"Incorrect! The number is less than {answer}")
     else:
         print(f"Sorry, you have run out of chances! The secret number is {secret}.")
 
