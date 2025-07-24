@@ -52,5 +52,4 @@ def play_game() -> None:
     )
     chances = set_difficulty_level()
     secret_number = random.randint(1, 100)
-    print(secret_number)
     guess(secret_number, chances)
