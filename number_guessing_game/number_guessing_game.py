@@ -27,12 +27,12 @@ def set_difficulty_level() -> int:
     choice = _input_int("Enter your choice: ", (1, len(DIFFICULTY)))
     level, chances = DIFFICULTY[choice - 1]
     print()
-    print(f"Great! You have selected the {level} difficulty level. You have {chances} chances.\n")
+    print(f"Great! You have selected the {level} difficulty level. You have {chances} chances.")
     return chances
 
 
 def guess(secret: int, chances: int) -> None:
-    print("Let's start the game!\n")
+    print("\nLet's start the game!\n")
     for i in range(chances):
         answer = _input_int("Enter your guess: ")
         if answer == secret:
