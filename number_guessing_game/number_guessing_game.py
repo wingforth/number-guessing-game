@@ -53,5 +53,12 @@ def play_game() -> None:
         "You have several chances to guess the correct number."
     )
     chances = set_difficulty_level()
-    secret_number = random.randint(1, 100)
-    guess(secret_number, chances)
+    while True:
+        secret_number = random.randint(1, 100)
+        guess(secret_number, chances)
+        print("\nDo you want to play again?\n1. Play again.\n2. Select a new difficulty level and play.\n3. Quite.")
+        reply = _input_int("Your reply: ", bound=(1, 3))
+        if reply == 3:
+            break
+        if reply == 2:
+            chances = set_difficulty_level()
