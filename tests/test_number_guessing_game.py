@@ -99,12 +99,24 @@ def test_guess_all_incorrect(monkeypatch, capsys, answers, secret, less, greater
     assert out.count("greater") == greater
 
 
-def test_play_game(monkeypatch, capsys):
-    # Simulate: select medium (2), then guess 50, then guess 77 (correct)
-    inputs = ["2", "50", "77"]
+@pytest.mark.parametrize(
+    "inputs,secret,rounds",
+    [
+        # Simulate: select Medium (2) difficulty, then guess 50, then guess 77 (correct), then quite.
+        (["2", "50", "77", "3"], [77], 1),
+        # Simulate: select medium (2), then guess 50, then guess 77 (correct),
+        # then play select Hard (3) difficulty and play again,
+        # then guess 90, then guess 85 (correct), then quite.
+        (["2", "50", "77", "2", "3", "90", "85", "3"], [77, 85], 2),
+        # Simulate: select medium (2), then guess 50, then guess 77 (correct),
+        # then play again, then guess 90, then guess 85 (correct), then quite.
+        (["2", "50", "77", "1", "90", "85", "3"], [77, 85], 2),
+    ],
+)
+def test_play_game(monkeypatch, capsys, inputs, secret, rounds):
     monkeypatch.setattr("builtins.input", lambda _: inputs.pop(0))
-    monkeypatch.setattr("random.randint", lambda *_: 77)
+    monkeypatch.setattr("random.randint", lambda *_: secret.pop(0))
     play_game()
     out = capsys.readouterr().out
     assert "Welcome to the Number Guessing Game" in out
-    assert "Congratulations" in out
+    assert out.count("Do you want to play again?") == rounds
