@@ -56,6 +56,9 @@ class TopScoreList:
         else:
             return len(high_scores) + 1
 
+    def get_top_score_list(self, difficulty_level: str) -> deque[tuple[int, float, str]]:
+        return self.__scores[difficulty_level]
+
     def clear(self) -> None:
         for scores in self.__scores.values():
             scores.clear()

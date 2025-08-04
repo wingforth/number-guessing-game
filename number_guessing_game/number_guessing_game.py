@@ -70,6 +70,19 @@ def rank(top_list: TopScoreList, score: tuple[int, float], difficulty_level: str
     )
     player = input("Please enter your name to record this ranking: ").strip()
     top_list.update_scores(ranking, score, player, difficulty_level)
+    show_top_score_list(top_list, difficulty_level)
+
+
+def show_top_score_list(top_list: TopScoreList, difficulty_level: str) -> None:
+    print(f"Do you want see the top score list on {difficulty_level} difficulty level (Y/n).")
+    while (reply := input().strip().lower()) not in ("y", "n", ""):
+        print("Please enter `y` or `n`.")
+    if reply == "n":
+        return
+    fmt = "{:^7} {:^8} {:^10} {}".format
+    print(fmt("ranking", "attempts", "elapsed(s)", "player"))
+    for ranking, (attempts, elapsed, player) in enumerate(top_list.get_top_score_list(difficulty_level), 1):
+        print(fmt(ranking, attempts, elapsed, player))
 
 
 def play_game() -> None:
