@@ -62,7 +62,7 @@ def rank(top_list: TopScoreList, score: tuple[int, float], difficulty_level: str
 
 
 def show_top_score_list(top_list: TopScoreList, difficulty_level: str) -> None:
-    print(f"Do you want see the top score list on {difficulty_level} difficulty level (Y/n).")
+    print(f"Do you want to view the top score list on {difficulty_level} difficulty level (Y/n).")
     while (reply := input().strip().lower()) not in ("y", "n", ""):
         print("Please enter `y` or `n`.")
     if reply == "n":
