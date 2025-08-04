@@ -36,8 +36,8 @@ def test_input_int_no_bound(monkeypatch):
 def test_set_difficulty_level(monkeypatch, capsys, choice):
     difficulty = DIFFICULTY[int(choice) - 1]
     monkeypatch.setattr("builtins.input", lambda _: choice)
-    chances = set_difficulty_level()
-    assert chances == difficulty[1]
+    level = set_difficulty_level()
+    assert level == difficulty
     out = capsys.readouterr().out
     assert difficulty[0] in out and str(difficulty[1]) in out
 
@@ -99,18 +99,43 @@ def test_guess_all_incorrect(monkeypatch, capsys, answers, secret, less, greater
     assert out.count("greater") == greater
 
 
+@pytest.mark.usefixtures("clear_top_list")
 @pytest.mark.parametrize(
     "inputs,secret,rounds",
     [
         # Simulate: select Medium (2) difficulty, then guess 50, then guess 77 (correct), then quite.
-        (["2", "50", "77", "3"], [77], 1),
+        (["2", "50", "77", "Lee", "3"], [77], 1),
         # Simulate: select medium (2), then guess 50, then guess 77 (correct),
         # then play select Hard (3) difficulty and play again,
         # then guess 90, then guess 85 (correct), then quite.
-        (["2", "50", "77", "2", "3", "90", "85", "3"], [77, 85], 2),
+        (["2", "50", "77", "Lee", "2", "3", "90", "85", "Steven", "3"], [77, 85], 2),
         # Simulate: select medium (2), then guess 50, then guess 77 (correct),
         # then play again, then guess 90, then guess 85 (correct), then quite.
-        (["2", "50", "77", "1", "90", "85", "3"], [77, 85], 2),
+        (["2", "50", "77", "Lee", "1", "90", "85", "Steven", "3"], [77, 85], 2),
+    ],
+)
+def test_play_game_empty_top_list(monkeypatch, capsys, inputs, secret, rounds):
+    monkeypatch.setattr("builtins.input", lambda _: inputs.pop(0))
+    monkeypatch.setattr("random.randint", lambda *_: secret.pop(0))
+    play_game()
+    out = capsys.readouterr().out
+    assert "Welcome to the Number Guessing Game" in out
+    assert out.count("Do you want to play again?") == rounds
+
+
+@pytest.mark.usefixtures("init_top_score_list")
+@pytest.mark.parametrize(
+    "inputs,secret,rounds",
+    [
+        # Simulate: select Medium (2) difficulty, then guess 50, then guess 77 (correct), then quite.
+        (["2", "50", "77", "Lee", "3"], [77], 1),
+        # Simulate: select medium (2), then guess 50, then guess 77 (correct),
+        # then play select Hard (3) difficulty and play again,
+        # then guess 90, then guess 85 (correct), then quite.
+        (["2", "50", "77", "Lee", "2", "3", "90", "85", "Steven", "3"], [77, 85], 2),
+        # Simulate: select medium (2), then guess 50, then guess 77 (correct),
+        # then play again, then guess 90, then guess 85 (correct), then quite.
+        (["2", "50", "77", "Lee", "1", "90", "85", "Steven", "3"], [77, 85], 2),
     ],
 )
 def test_play_game(monkeypatch, capsys, inputs, secret, rounds):
