@@ -104,18 +104,18 @@ def test_guess_all_incorrect(monkeypatch, capsys, answers, secret, less, greater
     "inputs,secret,rounds",
     [
         # Simulate: select Medium (2) difficulty, then guess 50, then guess 77 (correct), then quite.
-        (["2", "50", "77", "Lee", "3"], [77], 1),
+        (["2", "50", "77", "Lee", "n", "3"], [77], 1),
         # Simulate: select medium (2), then guess 50, then guess 77 (correct),
         # then play select Hard (3) difficulty and play again,
         # then guess 90, then guess 85 (correct), then quite.
-        (["2", "50", "77", "Lee", "2", "3", "90", "85", "Steven", "3"], [77, 85], 2),
+        (["2", "50", "77", "Lee", "", "2", "3", "90", "85", "Steven", "y", "3"], [77, 85], 2),
         # Simulate: select medium (2), then guess 50, then guess 77 (correct),
         # then play again, then guess 90, then guess 85 (correct), then quite.
-        (["2", "50", "77", "Lee", "1", "90", "85", "Steven", "3"], [77, 85], 2),
+        (["2", "50", "77", "Lee", "N", "1", "90", "85", "Steven", "Y", "3"], [77, 85], 2),
     ],
 )
 def test_play_game_empty_top_list(monkeypatch, capsys, inputs, secret, rounds):
-    monkeypatch.setattr("builtins.input", lambda _: inputs.pop(0))
+    monkeypatch.setattr("builtins.input", lambda *_: inputs.pop(0))
     monkeypatch.setattr("random.randint", lambda *_: secret.pop(0))
     play_game()
     out = capsys.readouterr().out
@@ -128,18 +128,18 @@ def test_play_game_empty_top_list(monkeypatch, capsys, inputs, secret, rounds):
     "inputs,secret,rounds",
     [
         # Simulate: select Medium (2) difficulty, then guess 50, then guess 77 (correct), then quite.
-        (["2", "50", "77", "Lee", "3"], [77], 1),
+        (["2", "50", "77", "Lee", "n", "3"], [77], 1),
         # Simulate: select medium (2), then guess 50, then guess 77 (correct),
         # then play select Hard (3) difficulty and play again,
         # then guess 90, then guess 85 (correct), then quite.
-        (["2", "50", "77", "Lee", "2", "3", "90", "85", "Steven", "3"], [77, 85], 2),
+        (["2", "50", "77", "Lee", "", "2", "3", "90", "85", "Steven", "y", "3"], [77, 85], 2),
         # Simulate: select medium (2), then guess 50, then guess 77 (correct),
         # then play again, then guess 90, then guess 85 (correct), then quite.
-        (["2", "50", "77", "Lee", "1", "90", "85", "Steven", "3"], [77, 85], 2),
+        (["2", "50", "77", "Lee", "N", "1", "90", "85", "Steven", "Y", "3"], [77, 85], 2),
     ],
 )
 def test_play_game(monkeypatch, capsys, inputs, secret, rounds):
-    monkeypatch.setattr("builtins.input", lambda _: inputs.pop(0))
+    monkeypatch.setattr("builtins.input", lambda *_: inputs.pop(0))
     monkeypatch.setattr("random.randint", lambda *_: secret.pop(0))
     play_game()
     out = capsys.readouterr().out
