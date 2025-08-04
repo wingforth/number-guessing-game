@@ -1,8 +1,8 @@
 # from random import randint
 import random
 import time
-
-DIFFICULTY = [("Easy", 10), ("Medium", 5), ("Hard", 3)]
+from number_guessing_game.config import DIFFICULTY, SCORE_FILE
+from number_guessing_game.storage import TopScoreList
 
 
 def _input_int(message: str = "", bound: tuple[int, int] | None = None) -> int:
@@ -19,19 +19,18 @@ def _input_int(message: str = "", bound: tuple[int, int] | None = None) -> int:
         return integer
 
 
-def set_difficulty_level() -> int:
+def set_difficulty_level() -> tuple[str, int]:
     print("\nPlease select the difficulty level:")
     for i, (level, chances) in enumerate(DIFFICULTY, 1):
         print(f"{i}. {level} ({chances} chances)")
     print()
     choice = _input_int("Enter your choice: ", (1, len(DIFFICULTY)))
-    level, chances = DIFFICULTY[choice - 1]
-    print()
-    print(f"Great! You have selected the {level} difficulty level. You have {chances} chances.")
-    return chances
+    difficulty = DIFFICULTY[choice - 1]
+    print(f"\nGreat! You have selected the {difficulty[0]} difficulty level. You have {difficulty[1]} chances.")
+    return difficulty
 
 
-def guess(secret: int, chances: int) -> None:
+def guess(secret: int, chances: int) -> tuple[int, float] | None:
     print("\nLet's start the game!\n")
     start = time.perf_counter()
 <<<<<<< HEAD
@@ -60,19 +59,34 @@ def guess(secret: int, chances: int) -> None:
         print(f"Sorry, you have run out of chances! The secret number is {secret}.")
 
 
+def rank(top_list: TopScoreList, score: tuple[int, float], difficulty_level: str) -> None:
+    ranking = top_list.ranking(score, difficulty_level)
+    if ranking is None:
+        return
+    print(
+        "\nCongratulations! You got "
+        f"{ranking}{'st' if ranking == 1 else 'nd' if ranking == 2 else 'th'} "
+        "place in the all-time ranking."
+    )
+    player = input("Please enter your name to record this ranking: ").strip()
+    top_list.update_scores(ranking, score, player, difficulty_level)
+
+
 def play_game() -> None:
     print(
         "Welcome to the Number Guessing Game!\n"
         "I'm thinking of a number between 1 and 100.\n"
         "You have several chances to guess the correct number."
     )
-    chances = set_difficulty_level()
-    while True:
-        secret_number = random.randint(1, 100)
-        guess(secret_number, chances)
-        print("\nDo you want to play again?\n1. Play again.\n2. Select a new difficulty level and play.\n3. Quite.")
-        reply = _input_int("Your reply: ", bound=(1, 3))
-        if reply == 3:
-            break
-        if reply == 2:
-            chances = set_difficulty_level()
+    with TopScoreList(10, SCORE_FILE) as top_list:
+        level, chances = set_difficulty_level()
+        while True:
+            secret_number = random.randint(1, 100)
+            if (score := guess(secret_number, chances)) is not None:
+                rank(top_list, score, level)
+            print("\nDo you want to play again?\n1. Play again.\n2. Select a new difficulty level and play.\n3. Quite.")
+            reply = _input_int("Your reply: ", bound=(1, 3))
+            if reply == 3:
+                break
+            if reply == 2:
+                level, chances = set_difficulty_level()
