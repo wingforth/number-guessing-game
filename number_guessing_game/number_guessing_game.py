@@ -33,24 +33,12 @@ def set_difficulty_level() -> tuple[str, int]:
 def guess(secret: int, chances: int) -> tuple[int, float] | None:
     print("\nLet's start the game!\n")
     start = time.perf_counter()
-<<<<<<< HEAD
-    for i in range(chances):
-        answer = _input_int("Enter your guess: ")
-        if answer == secret:
-            end = time.perf_counter()
-            print(
-                f"Congratulations! You guessed the correct number in {i + 1} attempts. "
-                f"It took {end - start:.3f} seconds."
-            )
-            break
-=======
     for attempts in range(1, chances + 1):
         answer = _input_int("Enter your guess: ")
         if answer == secret:
             elapsed = round(time.perf_counter() - start, 2)
             print(f"Congratulations! You guessed the correct number in {attempts} attempts. It took {elapsed} seconds.")
             return (attempts, elapsed)
->>>>>>> cc51d84 (feat: compute the time it takes to guess the number)
         if answer < secret:
             print(f"Incorrect! The number is greater than {answer}")
         else:
