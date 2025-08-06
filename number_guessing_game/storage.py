@@ -44,8 +44,8 @@ class TopScoreList:
         high_scores = self.__scores[difficulty_level]
         if len(high_scores) == self.max_count and score >= high_scores[-1][:2]:
             return None
-        for ranking, (attempts, time_taken, _) in enumerate(high_scores, 1):
-            if score < (attempts, time_taken):
+        for ranking, (attempts, elapsed, _) in enumerate(high_scores, 1):
+            if score < (attempts, elapsed):
                 return ranking
         else:
             return len(high_scores) + 1
