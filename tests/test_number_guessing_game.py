@@ -1,6 +1,12 @@
 import pytest
-from number_guessing_game.number_guessing_game import _input_int, set_difficulty_level, guess, play_game, DIFFICULTY
-
+from number_guessing_game.number_guessing_game import (
+    _input_int,
+    set_difficulty_level,
+    guess,
+    play_game,
+    provide_hint,
+    DIFFICULTY,
+)
 # test_number_guessing_game.py
 
 
@@ -145,3 +151,64 @@ def test_play_game(monkeypatch, capsys, inputs, secret, rounds):
     out = capsys.readouterr().out
     assert "Welcome to the Number Guessing Game" in out
     assert out.count("Do you want to play again?") == rounds
+
+
+@pytest.mark.parametrize(
+    "secret,guess,attempts_left,num",
+    [
+        (9, 5, 1, 3),
+        (35, 21, 1, 5),
+        (49, 45, 1, 7),
+    ],
+)
+def test_provide_hint_multiple_of_num(capsys, secret, guess, attempts_left, num):
+    provide_hint(secret, guess, attempts_left)
+    captured = capsys.readouterr()
+    assert f"Hint: The secret number is a multiple of {num}." in captured.out
+    assert "Hint: The sum of digits in the secret number is" not in captured.out
+
+
+@pytest.mark.parametrize(
+    "secret,guess,attempts_left,total",
+    [
+        (17, 5, 1, 8),
+        (23, 21, 1, 5),
+        (74, 45, 1, 11),
+    ],
+)
+def test_provide_hint_sum_of_digits(capsys, secret, guess, attempts_left, total):
+    provide_hint(secret, guess, attempts_left)
+    captured = capsys.readouterr()
+    assert f"Hint: The sum of digits in the secret number is {total}" in captured.out
+    assert "Hint: The secret number is a multiple of" not in captured.out
+
+
+@pytest.mark.parametrize(
+    "secret,guess,attempts_left,odd_or_even",
+    [
+        (17, 5, 2, "odd"),
+        (70, 45, 2, "even"),
+    ],
+)
+def test_provide_hint_even_odd(capsys, secret, guess, attempts_left, odd_or_even):
+    provide_hint(secret, guess, attempts_left)
+    captured = capsys.readouterr()
+    assert f"Hint: The secret number is {odd_or_even}" in captured.out
+
+
+def test_provide_hint_very_close(capsys):
+    provide_hint(10, 8, 3)
+    captured = capsys.readouterr()
+    assert "Hint: You're very close!" in captured.out
+
+
+def test_provide_hint_close(capsys):
+    provide_hint(20, 12, 3)
+    captured = capsys.readouterr()
+    assert "Hint: You're close! Within 10 numbers." in captured.out
+
+
+def test_provide_hint_very_far(capsys):
+    provide_hint(30, 10, 3)
+    captured = capsys.readouterr()
+    assert "Hint: You're very far!" in captured.out
