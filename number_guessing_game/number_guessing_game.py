@@ -43,8 +43,29 @@ def guess(secret: int, chances: int) -> tuple[int, float] | None:
             print(f"Incorrect! The number is greater than {answer}")
         else:
             print(f"Incorrect! The number is less than {answer}")
+        provide_hint(secret, answer, chances - attempts)
     else:
         print(f"Sorry, you have run out of chances! The secret number is {secret}.")
+
+
+def provide_hint(secret: int, guess: int, attempts_left: int) -> None:
+    if attempts_left == 1:
+        for num in (3, 5, 7):
+            if secret % num == 0:
+                print(f"Hint: The secret number is a multiple of {num}.")
+                break
+        else:
+            print(f"Hint: The sum of digits in the secret number is {sum(map(int, str(secret)))}")
+    elif attempts_left == 2:
+        print(f"Hint: The secret number is {'even' if secret % 2 == 0 else 'odd'}.")
+    elif attempts_left == 3:
+        diff = abs(secret - guess)
+        if diff <= 5:
+            print("Hint: You're very close!")
+        elif diff <= 10:
+            print("Hint: You're close! Within 10 numbers.")
+        else:
+            print("Hint: You're very far!")
 
 
 def rank(top_list: TopScoreList, score: tuple[int, float], difficulty_level: str) -> None:
