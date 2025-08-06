@@ -5,16 +5,12 @@ from number_guessing_game.config import DIFFICULTY
 
 
 class TopScoreList:
-    def __init__(self, max_length: int, score_file: Path) -> None:
-        """_summary_
+    """Manages top scores for each difficulty level."""
 
-        Args:
-            max_length (int): _description_
-            score_file (Path): _description_
-        """
+    def __init__(self, max_count: int, score_file: Path) -> None:
         self._ensure_dir_exist(score_file.parent)
-        # Number of high scores that are stored for every difficulty level.
-        self.max_length = max_length
+        # Max number of high scores that are stored for every difficulty level.
+        self.max_count: int = max_count
         # File that stores scores.
         self.score_file: Path = score_file
         self.__scores: dict[str, deque[tuple[int, float, str]]] = {}
@@ -24,31 +20,29 @@ class TopScoreList:
     def _ensure_dir_exist(directory: Path) -> None:
         if not directory.exists():
             directory.mkdir(parents=True, exist_ok=True)
-            return
-        if not directory.is_dir():
-            raise NotADirectoryError(f"{directory} is not a directory.")
+        elif not directory.is_dir():
+            raise NotADirectoryError(f"Path {directory} exits, but not a directory.")
 
     def load_scores(self) -> None:
-        if not self.score_file.exists():
-            self.__scores = {level: deque(maxlen=self.max_length) for level, _ in DIFFICULTY}
         if self.score_file.is_dir():
-            raise IsADirectoryError(f"{self.score_file} is not a file.")
-        with open(self.score_file, mode="r", encoding="utf-8") as fd:
-            try:
+            raise IsADirectoryError(f"Path {self.score_file} exits, but not a file.")
+        try:
+            with open(self.score_file, mode="r", encoding="utf-8") as fd:
                 data = json.load(fd)
-            except json.JSONDecodeError:
-                self.__scores = {level: deque(maxlen=self.max_length) for level, _ in DIFFICULTY}
-                return
-        self.__scores = {level: deque(map(tuple, records), maxlen=self.max_length) for level, records in data.items()}
+        except (json.JSONDecodeError, FileNotFoundError):
+            self.__scores = {level: deque(maxlen=self.max_count) for level, _ in DIFFICULTY}
+            return
+        self.__scores = {level: deque(map(tuple, records), maxlen=self.max_count) for level, records in data.items()}
 
     def save_scores(self) -> None:
         data = {level: list(records) for level, records in self.__scores.items()}
         with open(self.score_file, mode="w", encoding="utf-8") as fd:
             return json.dump(data, fd, indent=4)
+        self.__updated = False
 
     def ranking(self, score: tuple[int, float], difficulty_level: str) -> int | None:
         high_scores = self.__scores[difficulty_level]
-        if len(high_scores) == self.max_length and score >= high_scores[-1][:2]:
+        if len(high_scores) == self.max_count and score >= high_scores[-1][:2]:
             return None
         for ranking, (attempts, time_taken, _) in enumerate(high_scores, 1):
             if score < (attempts, time_taken):
@@ -56,8 +50,8 @@ class TopScoreList:
         else:
             return len(high_scores) + 1
 
-    def get_top_score_list(self, difficulty_level: str) -> deque[tuple[int, float, str]]:
-        return self.__scores[difficulty_level]
+    def get_top_score_list(self, difficulty_level: str) -> list[tuple[int, float, str]]:
+        return list(self.__scores[difficulty_level])
 
     def clear(self) -> None:
         for scores in self.__scores.values():
