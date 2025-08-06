@@ -72,11 +72,8 @@ def rank(top_list: TopScoreList, score: tuple[int, float], difficulty_level: str
     ranking = top_list.ranking(score, difficulty_level)
     if ranking is None:
         return
-    print(
-        "\nCongratulations! You got "
-        f"{ranking}{'st' if ranking == 1 else 'nd' if ranking == 2 else 'th'} "
-        "place in the all-time ranking."
-    )
+    suffix = ["th", "st", "nd", "rd"][ones if (ones := ranking % 10) < 4 else 0]
+    print(f"\nCongratulations! You got {ranking}{suffix} place in the all-time ranking.")
     player = input("Please enter your name to record this ranking: ").strip()
     top_list.update_scores(ranking, score, player, difficulty_level)
     show_top_score_list(top_list, difficulty_level)
